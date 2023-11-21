@@ -1,3 +1,4 @@
+/*
 // Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,3 +23,4 @@ class PlacesArFragment : ArFragment() {
     override fun getAdditionalPermissions(): Array<String> =
         listOf(Manifest.permission.ACCESS_FINE_LOCATION).toTypedArray()
 }
+*/

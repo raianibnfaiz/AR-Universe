@@ -133,8 +133,7 @@ class HelloArActivity : AppCompatActivity() {
     view = HelloArView(this)
     lifecycle.addObserver(view)
     setContentView(view.root)
-    placesService = PlacesService.create()
-    fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
     // Sets up an example renderer using our HelloARRenderer.
     SampleRender(view.surfaceView, renderer, assets)
 
@@ -142,9 +141,22 @@ class HelloArActivity : AppCompatActivity() {
     instantPlacementSettings.onCreate(this)
     mapFragment =
       supportFragmentManager.findFragmentById(R.id.maps_fragment) as SupportMapFragment
+    placesService = PlacesService.create()
+    fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
     setUpMaps()
   }
   private fun setUpMaps() {
+    Log.d(TAG, "entering setUpMaps")
+    mapFragment.getMapAsync { googleMap ->
+      Log.d(TAG, "setUpMaps: $googleMap")
+      if (googleMap == null) {
+        // Handle the case where the map is null
+        return@getMapAsync
+      }
+
+      // Rest of the code
+    }
+
     mapFragment.getMapAsync { googleMap ->
       if (ActivityCompat.checkSelfPermission(
           this,
@@ -164,9 +176,32 @@ class HelloArActivity : AppCompatActivity() {
         return@getMapAsync
       }
       googleMap.isMyLocationEnabled = true
+      Log.d(TAG, "setUpMaps: ${googleMap.cameraPosition}")
+    }
 
+    mapFragment.getMapAsync { googleMap ->
+      if (ActivityCompat.checkSelfPermission(
+          this,
+          Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+          this,
+          Manifest.permission.ACCESS_COARSE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED
+      ) {
+        // TODO: Consider calling
+        //    ActivityCompat#requestPermissions
+        // here to request the missing permissions, and then overriding
+        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+        //                                          int[] grantResults)
+        // to handle the case where the user grants the permission. See the documentation
+        // for ActivityCompat#requestPermissions for more details.
+        return@getMapAsync
+      }
+      googleMap.isMyLocationEnabled = true
+      Log.d(TAG, "entering setUpMaps $googleMap")
       getCurrentLocation {
         val pos = CameraPosition.fromLatLngZoom(it.latLng, 13f)
+        Log.d(TAG, "entering setUpMaps $pos")
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(pos))
         getNearbyPlaces(it)
       }
@@ -180,10 +215,13 @@ class HelloArActivity : AppCompatActivity() {
         return@setOnMarkerClickListener true
       }
       map = googleMap
+      Log.d(TAG, "entering setUpMaps $map")
     }
+    Log.d(TAG, "entering setUpMaps $map")
   }
 
   private fun getCurrentLocation(onSuccess: (Location) -> Unit) {
+    Log.d(TAG, "entering getCurrentLocation")
     if (ActivityCompat.checkSelfPermission(
         this,
         Manifest.permission.ACCESS_FINE_LOCATION
@@ -209,6 +247,7 @@ class HelloArActivity : AppCompatActivity() {
     }
   }
   private fun getNearbyPlaces(location: Location) {
+    Log.d(TAG, "entering getnearbyplaces")
     val apiKey = this.getString(R.string.google_maps_key)
     placesService.nearbyPlaces(
       apiKey = apiKey,
