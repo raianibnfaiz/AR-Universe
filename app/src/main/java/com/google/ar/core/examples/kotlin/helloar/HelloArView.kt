@@ -26,6 +26,7 @@ import androidx.lifecycle.LifecycleOwner
 import com.google.ar.core.Config
 import com.google.ar.core.examples.java.common.helpers.SnackbarHelper
 import com.google.ar.core.examples.java.common.helpers.TapHelper
+import com.google.codelabs.findnearbyplacesar.model.Place
 
 /** Contains UI elements for Hello AR. */
 class HelloArView(val activity: HelloArActivity) : DefaultLifecycleObserver {
@@ -61,6 +62,10 @@ class HelloArView(val activity: HelloArActivity) : DefaultLifecycleObserver {
   override fun onPause(owner: LifecycleOwner) {
     surfaceView.onPause()
   }
+
+  /*fun callMapAnchor(places:List<Place>) {
+    activity.renderer.mapAnchors(places)
+  }*/
 
   /**
    * Shows a pop-up dialog on the first tap in HelloARRenderer, determining whether the user wants

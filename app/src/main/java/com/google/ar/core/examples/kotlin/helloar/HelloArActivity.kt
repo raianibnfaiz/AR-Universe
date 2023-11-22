@@ -58,7 +58,9 @@ import retrofit2.Response
  * ARCore API. The application will display any detected planes and will allow the user to tap on a
  * plane to place a 3D model.
  */
+ var nearByplacesList: List<Place>? = null
 class HelloArActivity : AppCompatActivity() {
+  var currentLocation: Location? = null
   private var map: GoogleMap? = null
   private var cameraPosition: CameraPosition? = null
 
@@ -94,7 +96,7 @@ class HelloArActivity : AppCompatActivity() {
   private lateinit var placesService: PlacesService
   val instantPlacementSettings = InstantPlacementSettings()
   val depthSettings = DepthSettings()
-  private var currentLocation: Location? = null
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     if (savedInstanceState != null) {
@@ -144,6 +146,7 @@ class HelloArActivity : AppCompatActivity() {
     placesService = PlacesService.create()
     fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
     setUpMaps()
+
   }
   private fun setUpMaps() {
     Log.d(TAG, "entering setUpMaps")
@@ -177,6 +180,7 @@ class HelloArActivity : AppCompatActivity() {
       }
       googleMap.isMyLocationEnabled = true
       Log.d(TAG, "setUpMaps: ${googleMap.cameraPosition}")
+      map = googleMap
     }
 
     mapFragment.getMapAsync { googleMap ->
@@ -269,8 +273,10 @@ class HelloArActivity : AppCompatActivity() {
             return
           }
 
-          val places = response.body()?.results ?: emptyList()
+          val places:List<Place> = response.body()?.results ?: emptyList()
+          nearByplacesList = places
           Log.d(TAG, "onResponse: $places")
+          //view.callMapAnchor(places)
           this@HelloArActivity.places = places
         }
       }
